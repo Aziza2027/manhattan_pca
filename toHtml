@@ -1,0 +1,2 @@
+jupyter nbconvert --to html templates/test.ipynb --no-input
+# jupyter nbconvert --to html test.ipynb --no-input
