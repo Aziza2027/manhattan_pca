@@ -1,5 +1,4 @@
 import pandas as pd
-# import datawig
 
 import pandas as pd
 import numpy as np
@@ -15,5 +14,11 @@ cat_cols = [col for col in data.columns if data[col].dtype == 'object']
 num_cols = [col for col in data.columns if data[col].dtype != 'object']
 cat_data = data[cat_cols]
 num_data = data[num_cols]
-num_data_p = fill_categorical(cat_data.iloc[:10,-2:])
-print(num_data_p)
+exclude = list(num_data.isna().sum().sort_values()[::-1][:30].index)
+num_data = num_data.drop(columns=exclude)
+
+c_data = fill_categorical(cat_data)
+n_data = fill_numerical(num_data)
+
+final = pd.concat([c_data, n_data], axis=1)
+final.to_csv('data/join_filled.csv', index=False)

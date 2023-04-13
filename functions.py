@@ -4,33 +4,34 @@ import numpy as np
 from sklearn.impute import KNNImputer
 from sklearn.preprocessing import OrdinalEncoder
 
+def fill(arr):
+    imputer = KNNImputer(n_neighbors=10)
+    print(arr.shape)
+    d = imputer.fit_transform(arr)
+    print(d.shape)
+    return d
+
+
 def fill_numerical(Data):
-    imputer = KNNImputer(n_neighbors=5)
-    d = imputer.fit_transform(Data)
-    return pd.DataFrame(d, columns=Data.columns)
+    filled = fill(Data.copy())
+    # print(len(Data.columns))
+    # print(filled.shape)
+    # print(Data.copy().shape)
+    return pd.DataFrame(filled, columns=Data.columns)
 
 
 def fill_categorical(Cat_data):
-    print('here')
     # encoder = OrdinalEncoder(handle_unknown='use_encoded_value', unknown_value=-1)
     encoder = OrdinalEncoder()
-    print('here2')
-    print(Cat_data)
 
     encoded_data = encoder.fit_transform(Cat_data.values)
-    print('here3')
-
 
     encoded_data[encoded_data == -1] = np.nan
-    print(encoded_data)
-    data = fill_numerical(encoded_data)
-    print('here4')
+    data = fill(encoded_data)
 
-    encoded_data = np.round(data.values)
-    print(encoded_data)
+    encoded_data = np.round(data)
 
     # Inverse transform the encoded data to get the original data
     df_decoded = pd.DataFrame(encoder.inverse_transform(encoded_data), columns=Cat_data.columns)
-    print(df_decoded)
 
-    return df_decoded, encoded_data
+    return df_decoded
