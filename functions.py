@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 
+from scipy.stats import chi2_contingency
 from scipy.stats.contingency import odds_ratio
 
 from sklearn.impute import KNNImputer
@@ -52,6 +53,7 @@ def calculate_OR(case_group, control_group, wild, heterozygous, mutant,model, co
         
         stats = []
         for cross_tab in cross_tabs:
+
             cross_tab[cross_tab==0] = 1
             res = odds_ratio(cross_tab)
             OR = round(res.statistic, 4)
@@ -80,7 +82,7 @@ def calculate_OR(case_group, control_group, wild, heterozygous, mutant,model, co
 
             c_tabs.extend([c_tab2, c_tab])
         
-        else: # codominant
+        elif model == 'codominant':
             r1 = [sum(case_group == mutant), sum(case_group == wild) + sum(case_group == heterozygous)]
             r2 = [sum(control_group == mutant), sum(control_group == wild) + sum(control_group == heterozygous)]
             r3 = [sum(case_group == wild), sum(case_group == heterozygous) + sum(case_group == mutant)]
@@ -93,6 +95,17 @@ def calculate_OR(case_group, control_group, wild, heterozygous, mutant,model, co
             c_tab3 = np.array([r5, r6])
 
             c_tabs.extend([c_tab2, c_tab3, c_tab])
+        else: # allele
+            cases = pd.Series(list(''.join(case_group)))
+            conls = pd.Series(list(''.join(control_group)))
+            
+            r1 = [sum(cases == wild[0]), sum(cases == mutant[0])]
+            r2 = [sum(conls == wild[0]),sum(conls == mutant[0])]
+
+            c_tab = np.array([r1, r2])
+            c_tab2 = np.array([r2, r1])
+
+            c_tabs.extend([c_tab2, c_tab])
 
         return c_tabs 
     
@@ -101,3 +114,15 @@ def calculate_OR(case_group, control_group, wild, heterozygous, mutant,model, co
     results = get_stats(cross_tabs)
 
     return results
+
+def calculate_P(case, gen):
+    
+    c_tab = pd.crosstab(case,gen)
+    p_gen = chi2_contingency(c_tab).pvalue
+
+    col1 = pd.concat([case,case]).reset_index(drop=True)
+    col2 = pd.concat([gen.str[0],gen.str[1]]).reset_index(drop=True)
+    c_tab2 = pd.crosstab(col1,col2).iloc[[1,0]]
+    p_all = chi2_contingency(c_tab2).pvalue
+
+    return p_all,p_gen
