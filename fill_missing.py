@@ -20,5 +20,5 @@ num_data = num_data.drop(columns=exclude)
 c_data = fill_categorical(cat_data)
 n_data = fill_numerical(num_data)
 
-final = pd.concat([c_data, n_data], axis=1)
+final = pd.concat([n_data, c_data], axis=1)
 final.to_csv('data/join_filled.csv', index=False)
