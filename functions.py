@@ -15,6 +15,8 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 
 from adjustText import adjust_text
+from ast import literal_eval
+
 
 def fill(arr):
     imputer = KNNImputer(n_neighbors=10)
@@ -302,4 +304,35 @@ def get_manhattan2(rs, chr, pos, p_val):
     adjust_text(annotations, arrowprops = {'arrowstyle' : '-', 'color' : 'blue'})
     plt.plot()
     plt.savefig('../visualizations/fig.jpg')
+
+
+def to_array(df):
+    def convert_to_array(col):
+        """
+        Convert genotypic information to an array.
+        """
+        w, m = col.name[-3:].split('>')
+        wild, heterozygous, mutant = w+w, w+m, m+m
+    
+        replace_values = {
+            wild : '[0, 0]',
+            heterozygous : '[0, 1]',
+            mutant : '[1, 1]'
+        }
+
+        res = col.replace(replace_values)
+        try:
+            res.apply(lambda x: literal_eval(str(x)))
+        except:
+            print(res.unique(), col.name)
+            
+        return res
+        
+    result = df.apply(convert_to_array)
+
+    return result
+
+def factorize(df):
+    df = df.apply(lambda x: pd.factorize(x)[0])
+    return df
 
