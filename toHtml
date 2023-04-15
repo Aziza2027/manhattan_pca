@@ -1,2 +1,2 @@
-jupyter nbconvert --to html ./templates/visualize.ipynb --no-input
+jupyter nbconvert --to html visualize.ipynb --no-input
 # jupyter nbconvert --to html test.ipynb --no-input
