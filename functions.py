@@ -7,6 +7,15 @@ from scipy.stats.contingency import odds_ratio
 from sklearn.impute import KNNImputer
 from sklearn.preprocessing import OrdinalEncoder
 
+import plotly.express as px
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
+
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+from adjustText import adjust_text
+
 def fill(arr):
     imputer = KNNImputer(n_neighbors=10)
     print(arr.shape)
@@ -126,3 +135,171 @@ def calculate_P(case, gen):
     p_all = chi2_contingency(c_tab2).pvalue
 
     return p_all,p_gen
+
+
+def preprocess_data(rs, chr, pos, p_val):
+    df = pd.concat([rs, chr, pos, p_val], axis=1)
+    df.columns = ['rsid', 'CHR', 'POS','p_val']
+    df['neg_p_val']  = - np.log10(df['p_val'])
+    running_pos = 0
+    cumulative_pos = []
+
+    for _, group_df in df.groupby('CHR'):  
+        cumulative_pos.append(group_df['POS'] + running_pos)
+        running_pos += group_df['POS'].max()
+        
+    df['cumulative_pos'] = pd.concat(cumulative_pos)
+    df.sort_values(by='CHR', inplace=True)
+
+    return df
+
+
+def get_manhattan(rs, chr, pos, p_val, title):
+    df = preprocess_data(rs, chr, pos, p_val)
+
+    # Copy data
+    my_data = df.copy()
+
+    # Thresholds
+    threshold = 0.05  # Red line
+    display = 0.05  # p-value below this threshold will be displayed
+    neg_l_t = -np.log10(threshold)
+    neg_l_d = -np.log10(display)
+
+    # Create figure
+    fig = make_subplots(specs=[[{"secondary_y": True}]])
+
+    # Plot scatter
+    fig.add_trace(
+        go.Scatter(
+            x=my_data['cumulative_pos'], 
+            y=my_data['neg_p_val'],
+            mode='markers',
+            marker=dict(size=5, color=my_data['CHR'], colorscale=px.colors.qualitative.Dark24),
+            showlegend=False,
+            hovertext=df.rsid.values,
+            hoverinfo="text",
+        ),
+        secondary_y=False
+    )
+
+    # Set x-axis labels and tick positions
+    fig.update_xaxes(
+        tickmode='array',
+        tickvals=my_data.groupby('CHR')['cumulative_pos'].median(),
+        ticktext=my_data['CHR'].unique(),
+        title_text='Chromosome'
+    )
+
+    # Set y-axis labels
+    fig.update_yaxes(
+        title_text='—Log10(p-value)',
+        secondary_y=False
+    )
+
+    # Add horizontal line at threshold
+    fig.add_shape(
+        type="line",
+        x0=my_data['cumulative_pos'].min(),
+        y0=neg_l_t,
+        x1=my_data['cumulative_pos'].max(),
+        y1=neg_l_t,
+        line=dict(color="red", width=1, dash='dash'),
+        secondary_y=False,
+    )
+
+    # Add text label for threshold
+    fig.add_annotation(
+        x=-1,
+        y=neg_l_t-0.11,
+        text=f"p-value = {threshold}",
+        showarrow=False,
+        font=dict(size=10, family='italic')
+    )
+
+    # Add annotations for significant data points
+    sig_points = my_data[my_data['neg_p_val'] > neg_l_d]
+    annotations = []
+    for i, row in sig_points.iterrows():
+        annotations.append(
+            dict(
+                x=row['cumulative_pos'], 
+                y=row['neg_p_val'], 
+                text=row['rsid'], 
+                # text="outlier",
+                showarrow=False,
+                yshift=10,
+                font=dict(size=10, family='italic')
+            )
+        )
+        
+    layout = go.Layout(
+        # title="Box plot of Amino acid deletions",    
+        plot_bgcolor="#FFFFFF",
+        barmode="stack",
+        xaxis=dict(
+            # domain=[0, 0.5],
+            # title="substitutions",
+            linecolor="#BCCCDC",
+        ),
+        yaxis=dict(
+            # title="frequency",
+            linecolor="#BCCCDC"
+        )
+        )
+
+    fig.update_layout(
+        title_text=title,
+        xaxis=dict(showgrid=True, zeroline=False),
+        yaxis=dict(showgrid=True, zeroline=False),
+        # hovermode='closest',
+        margin=dict(l=50, r=50, b=50, t=50),
+        annotations=annotations,
+        showlegend=False
+    )
+    fig.update_layout(layout)
+
+    fig.show()
+
+
+def get_manhattan2(rs, chr, pos, p_val):
+
+    df = preprocess_data(rs, chr, pos, p_val)
+
+    my_data = df.copy()
+
+    threshold = 0.05 # red line  
+    display = 0.05 # p-value below this threshold will be displayed
+    neg_l_t = -np.log10(threshold)
+    neg_l_d = -np.log10(display)
+
+    g = sns.relplot(
+        data = my_data,
+        x = 'cumulative_pos',
+        y = 'neg_p_val',
+        aspect = 4,
+        hue = 'CHR',
+        # palette = ['grey', 'black'] * 11,
+        palette = 'Set1',
+        linewidth=0,
+        s=20,
+        legend=None
+    )
+
+    g.ax.set_xlabel('Chromosome')
+    g.ax.set_ylabel('—Log10(p-value)')
+
+    g.ax.set_xticks(my_data.groupby('CHR')['cumulative_pos'].mean())
+
+    g.ax.set_xticklabels(df['CHR'].unique())
+    g.ax.axhline(neg_l_t, ls='--', linewidth=1, color='red')
+    g.ax.text(-1, neg_l_t-0.11, f'p-value = {threshold}', fontsize=10, va='bottom', fontstyle='italic')
+
+    # g.fig.suptitle('GWAS plot showing association between SNPs on autosomes and speeding')
+
+    annotations = my_data[my_data['neg_p_val'] > neg_l_d].apply(lambda p : g.ax.annotate(p['rsid'], (p['cumulative_pos'], p['neg_p_val'])), axis=1).to_list()
+
+    adjust_text(annotations, arrowprops = {'arrowstyle' : '-', 'color' : 'blue'})
+    plt.plot()
+    plt.savefig('../visualizations/fig.jpg')
+
