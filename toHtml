@@ -1,4 +1,5 @@
 jupyter nbconvert --to html ./code/LD_PCA.ipynb --no-input --output ../templates/2.html
 jupyter nbconvert --to html ./code/visualize.ipynb --no-input --output ../templates/1.html
+jupyter nbconvert --to html ./code/to_do.ipynb --no-input --output ../templates/3.html
 
 # jupyter nbconvert --to html test.ipynb --no-input
