@@ -221,6 +221,7 @@ def get_manhattan(rs, chr, pos, p_val, title):
 
     # Add annotations for significant data points
     sig_points = my_data[my_data['neg_p_val'] > neg_l_d]
+    print(sig_points.rsid.values)
     annotations = []
     for i, row in sig_points.iterrows():
         annotations.append(
@@ -230,11 +231,11 @@ def get_manhattan(rs, chr, pos, p_val, title):
                 text=row['rsid'], 
                 # text="outlier",
                 showarrow=False,
-                yshift=10,
-                font=dict(size=10, family='italic')
+                yshift=9,
+                xshift=28,
+                font=dict(size=12, family='italic')
             )
         )
-        
     layout = go.Layout(
         # title="Box plot of Amino acid deletions",    
         plot_bgcolor="#FFFFFF",
@@ -252,8 +253,8 @@ def get_manhattan(rs, chr, pos, p_val, title):
 
     fig.update_layout(
         title_text=title,
-        xaxis=dict(showgrid=True, zeroline=False),
-        yaxis=dict(showgrid=True, zeroline=False),
+        # xaxis=dict(showgrid=True, zeroline=False),
+        # yaxis=dict(showgrid=True, zeroline=False),
         # hovermode='closest',
         margin=dict(l=50, r=50, b=50, t=50),
         annotations=annotations,
@@ -303,7 +304,7 @@ def get_manhattan2(rs, chr, pos, p_val):
 
     adjust_text(annotations, arrowprops = {'arrowstyle' : '-', 'color' : 'blue'})
     plt.plot()
-    plt.savefig('../visualizations/fig.jpg')
+    # plt.savefig('../visualizations/fig.jpg')
 
 
 def to_array(df):
