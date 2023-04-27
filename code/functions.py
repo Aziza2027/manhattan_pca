@@ -144,6 +144,7 @@ def calculate_P(case, gen):
 def preprocess_data(rs, chr, pos, p_val):
     df = pd.concat([rs, chr, pos, p_val], axis=1)
     df.columns = ['rsid', 'CHR', 'POS','p_val']
+    df = df.sort_values(['CHR', 'POS'], ascending=[True, True])
     df['neg_p_val']  = - np.log10(df['p_val'])
     running_pos = 0
     cumulative_pos = []
