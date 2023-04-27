@@ -17,6 +17,8 @@ from sklearn.impute import KNNImputer
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import OrdinalEncoder
 
+from ast import literal_eval
+
 
 def fill(arr):
     imputer = KNNImputer(n_neighbors=10)
@@ -156,6 +158,13 @@ def preprocess_data(rs, chr, pos, p_val):
     return df
 
 
+def get_chr(rsR, rs, chr, pos):
+    test = pd.concat([rs, chr, pos], axis=1)
+    test.columns = ['rs', 'chr', 'pos']
+    merged = pd.merge(test, rsR)
+    return merged.chr, merged.pos
+
+
 def get_manhattan(rs, chr, pos, p_val, title):
     df = preprocess_data(rs, chr, pos, p_val)
 
@@ -177,7 +186,7 @@ def get_manhattan(rs, chr, pos, p_val, title):
             x=my_data['cumulative_pos'], 
             y=my_data['neg_p_val'],
             mode='markers',
-            marker=dict(size=5, color=my_data['CHR'], colorscale=px.colors.qualitative.Dark24),
+            marker=dict(size=6, color=my_data['CHR'], colorscale=px.colors.qualitative.Dark24),
             showlegend=False,
             hovertext=df.rsid.values,
             hoverinfo="text",
@@ -221,7 +230,7 @@ def get_manhattan(rs, chr, pos, p_val, title):
 
     # Add annotations for significant data points
     sig_points = my_data[my_data['neg_p_val'] > neg_l_d]
-    print(sig_points.rsid.values)
+    # print(sig_points.rsid.values)
     annotations = []
     for i, row in sig_points.iterrows():
         annotations.append(
@@ -350,6 +359,7 @@ def PCA3d(data, groups, title='3D PCA'):
 
     # Set the title and axis labels
     fig.update_layout(title=title, 
+                      template='plotly_white', 
                     scene=dict(xaxis_title='1st eigenvector', yaxis_title='2nd eigenvector', 
                                 zaxis_title='3rd eigenvector'))
     fig.update_traces(marker_size=6)
@@ -357,20 +367,34 @@ def PCA3d(data, groups, title='3D PCA'):
     return fig
 
 def PCA2d(data, groups, title = '2D PCA'):
+    layout = go.Layout(
+        plot_bgcolor="#FFFFFF",
+        barmode="stack",
+        xaxis=dict(
+            linecolor="#BCCCDC",
+        ),
+        yaxis=dict(
+            linecolor="#BCCCDC"
+        )
+    )
+
+
     X_reduced = PCA(n_components=2).fit_transform(data)
     # Create a dataframe with the reduced data
     df = pd.DataFrame(X_reduced, columns=['PC1', 'PC2'])
     df['Groups'] = groups
     # Create the scatter plot with Plotly
-    fig = px.scatter(df, x='PC1', y='PC2', color='Groups', 
+    fig = px.scatter(df[::-1], x='PC1', y='PC2', color='Groups', 
                         symbol='Groups', opacity=0.9,
                         width=700, height=500)
 
     # Set the title and axis labels
     fig.update_layout(title=title, 
+                      template='plotly_white', 
                     #   scene=dict(xaxis_title='1st eigenvector', yaxis_title='2nd eigenvector', 
                     #              zaxis_title='3rd eigenvector')
                                 )
+    # fig.update_layout(template='plotly_white', )
     fig.update_traces(marker_size=8)
     fig.update_coloraxes(showscale=False)
     return fig
