@@ -278,6 +278,8 @@ def get_rs_info(rs):
     info = pd.read_csv('./data/rs_info.csv')
 
     info = pd.merge(rs, info, on='rs')
+    info = info[info.chr<24]
+
 
     pos = info.pos
     chr = info.chr
