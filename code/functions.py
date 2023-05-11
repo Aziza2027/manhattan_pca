@@ -166,7 +166,128 @@ def get_chr(rsR, rs, chr, pos):
     return merged.chr, merged.pos
 
 
-def get_manhattan(rs, chr, pos, p_val, title):
+def get_manhattan_v1(rs, chr, pos, p_val, title):
+    df = preprocess_data(rs, chr, pos, p_val)
+
+    # Copy data
+    my_data = df.copy()
+
+    # Thresholds
+    threshold = 0.05  # Red line
+    display = 0.05  # p-value below this threshold will be displayed
+    neg_l_t = -np.log10(threshold)
+    neg_l_d = -np.log10(display)
+
+    # Create figure
+    fig = make_subplots(specs=[[{"secondary_y": True}]])
+
+    # Plot scatter
+    fig.add_trace(
+        go.Scatter(
+            x=my_data['cumulative_pos'], 
+            y=my_data['neg_p_val'],
+            mode='markers',
+            marker=dict(size=6, color=my_data['CHR'], colorscale=px.colors.qualitative.Dark24),
+            showlegend=False,
+            hovertext=df.rsid.values,
+            hoverinfo="text",
+        ),
+        secondary_y=False
+    )
+
+    # Set x-axis labels and tick positions
+    fig.update_xaxes(
+        tickmode='array',
+        tickvals=my_data.groupby('CHR')['cumulative_pos'].median(),
+        ticktext=my_data['CHR'].unique(),
+        title_text='Chromosome'
+    )
+
+    # Set y-axis labels
+    fig.update_yaxes(
+        title_text='—Log10(p-value)',
+        secondary_y=False
+    )
+
+    # Add horizontal line at threshold
+    fig.add_shape(
+        type="line",
+        x0=my_data['cumulative_pos'].min(),
+        y0=neg_l_t,
+        x1=my_data['cumulative_pos'].max(),
+        y1=neg_l_t,
+        line=dict(color="red", width=1, dash='dash'),
+        secondary_y=False,
+    )
+
+    # Add text label for threshold
+    fig.add_annotation(
+        x=-1,
+        y=neg_l_t-0.11,
+        text=f"p-value = {threshold}",
+        showarrow=False,
+        font=dict(size=10, family='italic')
+    )
+
+    # Add annotations for significant data points
+    sig_points = my_data[my_data['neg_p_val'] > neg_l_d]
+    # print(sig_points.rsid.values)
+    annotations = []
+    for i, row in sig_points.iterrows():
+        annotations.append(
+            dict(
+                x=row['cumulative_pos'], 
+                y=row['neg_p_val'], 
+                text=row['rsid'], 
+                # text="outlier",
+                showarrow=False,
+                yshift=9,
+                xshift=28,
+                font=dict(size=12, family='italic')
+            )
+        )
+    layout = go.Layout(
+        # title="Box plot of Amino acid deletions",    
+        plot_bgcolor="#FFFFFF",
+        barmode="stack",
+        xaxis=dict(
+            # domain=[0, 0.5],
+            # title="substitutions",
+            linecolor="#BCCCDC",
+        ),
+        yaxis=dict(
+            # title="frequency",
+            linecolor="#BCCCDC"
+        )
+        )
+
+    fig.update_layout(
+        title_text=title,
+        # xaxis=dict(showgrid=True, zeroline=False),
+        # yaxis=dict(showgrid=True, zeroline=False),
+        # hovermode='closest',
+        margin=dict(l=50, r=50, b=50, t=50),
+        annotations=annotations,
+        showlegend=False
+    )
+    fig.update_layout(layout)
+
+    fig.show()
+
+def get_rs_info(rs):
+    info = pd.read_csv('./data/rs_info.csv')
+
+    info = pd.merge(rs, info, on='rs')
+
+    pos = info.pos
+    chr = info.chr
+
+    return chr, pos
+
+
+def get_manhattan(rs, p_val, title):
+    chr, pos = get_rs_info(rs)
+
     df = preprocess_data(rs, chr, pos, p_val)
 
     # Copy data
