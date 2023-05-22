@@ -472,6 +472,7 @@ def factorize(df):
 
 
 def PCA3d(data, groups, title='3D PCA'):
+    data = factorize(data)
     X_reduced = PCA(n_components=3).fit_transform(data)
     # Create a dataframe with the reduced data
     df = pd.DataFrame(X_reduced, columns=['PC1', 'PC2', 'PC3'])
@@ -486,11 +487,13 @@ def PCA3d(data, groups, title='3D PCA'):
                       template='plotly_white', 
                     scene=dict(xaxis_title='1st eigenvector', yaxis_title='2nd eigenvector', 
                                 zaxis_title='3rd eigenvector'))
-    fig.update_traces(marker_size=6)
+    fig.update_traces(marker_size=5)
     fig.update_coloraxes(showscale=False)
     return fig
 
 def PCA2d(data, groups, title = '2D PCA'):
+    data = factorize(data)
+
     layout = go.Layout(
         plot_bgcolor="#FFFFFF",
         barmode="stack",

@@ -1,6 +1,4 @@
 import pandas as pd
-
-import pandas as pd
 import numpy as np
 
 from functions import fill_categorical, fill_numerical
