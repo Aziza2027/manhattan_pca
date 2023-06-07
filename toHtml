@@ -1,0 +1,5 @@
+jupyter nbconvert --to html ./code/PCA.ipynb --no-input --output ../templates/2.html
+jupyter nbconvert --to html ./code/Manhattan.ipynb --no-input --output ../templates/1.html
+jupyter nbconvert --to html ./code/to_do.ipynb --no-input --output ../templates/3.html
+
+# jupyter nbconvert --to html test.ipynb --no-input
