@@ -1,3 +1,7 @@
 # vcf -> website update
 
 python ./code/add_status_to_vcf.py
+
+# jupyter nbconvert --to=html --ExecutePreprocessor.enabled=True notebook.ipynb # calculate R stat
+
+./push

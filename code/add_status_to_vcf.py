@@ -23,6 +23,6 @@ df = pd.read_csv(DATA_PATH_FILLED)
 
 df['Status'] = df.iloc[:,0].apply(lambda x: int('k' not in x))
 
-df.to_excel('./code/data/data_Ali.xlsx', engine='xlsxwriter')
+df.to_excel('./code/data/data_Ali.xlsx', engine='xlsxwriter', index=False)
 
 print(df.Status.value_counts())

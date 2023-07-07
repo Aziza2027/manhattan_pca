@@ -1,5 +1,7 @@
-jupyter nbconvert --to html ./code/PCA.ipynb --no-input --output ../templates/2.html
-jupyter nbconvert --to html ./code/visualize.ipynb --no-input --output ../templates/1.html
-jupyter nbconvert --to html ./code/to_do.ipynb --no-input --output ../templates/3.html
+# jupyter nbconvert --to=html --ExecutePreprocessor.enabled=True notebook.ipynb
 
-# jupyter nbconvert --to html test.ipynb --no-input
+jupyter nbconvert --to html --ExecutePreprocessor.enabled=True ./code/PCA.ipynb --no-input --output ../templates/2.html
+jupyter nbconvert --to html --ExecutePreprocessor.enabled=True ./code/manhattan.ipynb --no-input --output ../templates/1.html
+# jupyter nbconvert --to html ./code/to_do.ipynb --no-input --output ../templates/3.html
+
+
