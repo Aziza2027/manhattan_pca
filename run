@@ -1,0 +1,3 @@
+# vcf -> website update
+
+python ./code/add_status_to_vcf.py
