@@ -2,6 +2,17 @@
 
 python ./code/add_status_to_vcf.py
 
+# ------------------- RUN NOTEBOOKS AND CONVERT TO HTML ----------------------
+
 # jupyter nbconvert --to=html --ExecutePreprocessor.enabled=True notebook.ipynb # calculate R stat
 
-./push
+jupyter nbconvert --to html --ExecutePreprocessor.enabled=True ./code/PCA.ipynb --no-input --output ../templates/2.html
+jupyter nbconvert --to html --ExecutePreprocessor.enabled=True ./code/manhattan.ipynb --no-input --output ../templates/1.html
+# jupyter nbconvert --to html ./code/to_do.ipynb --no-input --output ../templates/3.html
+
+# ------------------- UPDATE GITHUB AND WEBSITE ----------------------
+
+git add .
+git commit -m "update"
+git push
+
