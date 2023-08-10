@@ -59,7 +59,7 @@ excel_file_path = './code/data/data_Ali.xlsx'
 my_large_df = pd.read_excel(excel_file_path)
 
 # Display the content of the Excel file
-st.dataframe(my_large_df)
+st.dataframe(my_large_df.iloc[:20, :20])
 
 @st.cache_data
 def convert_df_to_excel(df):
@@ -67,7 +67,7 @@ def convert_df_to_excel(df):
     return df.to_csv().encode('utf-8')
 
 st.download_button(
-    label="Download data",
+    label="Download full data",
     data=convert_df_to_excel(my_large_df),
     file_name='CI.csv',
     mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
