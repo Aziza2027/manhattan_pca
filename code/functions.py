@@ -343,14 +343,6 @@ def get_manhattan(rs, p_val, title):
         secondary_y=False,
     )
 
-    # Add text label for threshold
-    fig.add_annotation(
-        x=-1,
-        y=neg_l_t-0.11,
-        text=f"p-value = {threshold}",
-        showarrow=False,
-        font=dict(size=10, family='italic')
-    )
 
     # Add annotations for significant data points
     sig_points = my_data[my_data['neg_p_val'] > neg_l_d]
@@ -369,6 +361,16 @@ def get_manhattan(rs, p_val, title):
                 font=dict(size=12, family='italic')
             )
         )
+
+    p_annot = dict(
+        x=-1,
+        y=neg_l_t-0.11,
+        text=f"p-value = {threshold}",
+        showarrow=False,
+        font=dict(size=10, family='italic')
+    )
+    annotations.append(p_annot)
+
     layout = go.Layout(
         # title="Box plot of Amino acid deletions",    
         plot_bgcolor="#FFFFFF",
