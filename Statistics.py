@@ -4,7 +4,7 @@ import pandas as pd
 
 
 st.set_page_config(page_title = "This is a Multipage WebApp")
-st.title("Stat results")
+st.title("Results")
 # stm.sidebar.success("Select Any Page from here")
 
 # --------------------------------------------------------------------
@@ -22,7 +22,7 @@ def convert_df_to_csv(df):
 st.download_button(
   label="Download data as CSV",
   data=convert_df_to_csv(my_large_df),
-  file_name='large_df.csv',
+  file_name='p_val.csv',
   mime='text/csv',
 )
 
@@ -45,7 +45,7 @@ def convert_txt_to_bytes(txt_content):
 st.download_button(
     label="Download as TXT",
     data=convert_txt_to_bytes(txt_content),
-    file_name='text_file.txt',
+    file_name='confidence_interval.txt',
     mime='text/plain',
 )
 
@@ -69,7 +69,7 @@ def convert_df_to_excel(df):
 st.download_button(
     label="Download full data",
     data=convert_df_to_excel(my_large_df),
-    file_name='CI.csv',
+    file_name='genotype_impotuted.csv',
     mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
 )
 
