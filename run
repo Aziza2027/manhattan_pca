@@ -1,6 +1,6 @@
 # vcf -> website update
 
-python ./code/add_status_to_vcf.py
+# python ./code/add_status_to_vcf.py
 
 # ------------------- RUN NOTEBOOKS AND CONVERT TO HTML ----------------------
 

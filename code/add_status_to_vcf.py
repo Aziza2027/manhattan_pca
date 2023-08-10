@@ -1,14 +1,17 @@
 import pandas as pd
 
-DATA_PATH = '/home/cat/projects/GWAS_analysis/variants/SNP_with_id.vcf'
+path = '/home/bio/Downloads/GWAS_analysis-20230810T033758Z-001/GWAS_analysis/variants/'
 
-DATA_PATH_FILLED = '/home/cat/projects/GWAS_analysis/variants/filled.csv'
+DATA_PATH = path + 'SNP_with_id.vcf'
+
+DATA_PATH_FILLED = path + 'filled.csv'
 
 def read_vcf(data_path):
     df = pd.read_csv(DATA_PATH, delimiter=' ')
     df = df[['#[1]CHROM','[2]POS', '[3]ID']]
     df.columns = ['chr','pos', 'rs']
     chr = df.chr.str.split('.').str[0].str.split('_').str[1].astype(int)
+    # print(chr)
 
     df.chr = chr
     # df[df.chr<24]

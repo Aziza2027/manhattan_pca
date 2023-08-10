@@ -471,25 +471,18 @@ def factorize(df):
     return df
 
 
-def PCA3d(data, groups, title='3D PCA'):
-    data = factorize(data)
-    X_reduced = PCA(n_components=3).fit_transform(data)
-    # Create a dataframe with the reduced data
-    df = pd.DataFrame(X_reduced, columns=['PC1', 'PC2', 'PC3'])
-    df['Groups'] = groups
-    # Create the scatter plot with Plotly
-    fig = px.scatter_3d(df, x='PC1', y='PC2', z='PC3', color='Groups', 
-                        symbol='Groups', opacity=0.9,
-                        width=800, height=800)
+def calc_pca(data, comps = 2):
+    pca = PCA(n_components=comps)
+    pca.fit(data)
+    # explained_variance_ratio = pca.explained_variance_ratio_
+    # components = pca.components_
+    # print(explained_variance_ratio)
+    # print(components[0][:5])
+    # print(components.T[:2])
+    # print(PCA(n_components=2).fit_transform(data)[:2])
+    # # return components.T
+    return pca.transform(data)
 
-    # Set the title and axis labels
-    fig.update_layout(title=title, 
-                      template='plotly_white', 
-                    scene=dict(xaxis_title='1st eigenvector', yaxis_title='2nd eigenvector', 
-                                zaxis_title='3rd eigenvector'))
-    fig.update_traces(marker_size=5)
-    fig.update_coloraxes(showscale=False)
-    return fig
 
 def PCA2d(data, groups, title = '2D PCA'):
     data = factorize(data)
@@ -499,30 +492,114 @@ def PCA2d(data, groups, title = '2D PCA'):
         barmode="stack",
         xaxis=dict(
             linecolor="#BCCCDC",
+            title='PC1',
+            zeroline=True,
+            zerolinewidth=10
         ),
         yaxis=dict(
-            linecolor="#BCCCDC"
+            linecolor="#BCCCDC",
+            title='PC2'
         )
+        
     )
 
+    pca = calc_pca(data)
 
-    X_reduced = PCA(n_components=2).fit_transform(data)
     # Create a dataframe with the reduced data
-    df = pd.DataFrame(X_reduced, columns=['PC1', 'PC2'])
+    df = pd.DataFrame(pca, columns=['PC1', 'PC2'])
     df['Groups'] = groups
-    # Create the scatter plot with Plotly
-    fig = px.scatter(df[::-1], x='PC1', y='PC2', color='Groups', 
-                        symbol='Groups', opacity=0.9,
-                        width=700, height=500)
 
-    # Set the title and axis labels
+    color_palette = ['blue', 'red']
+    legend = ['A', 'B']
+    scatter = []
+    gr = {
+        0:'Control',
+        1:'Case'
+    }
+
+    # Create a Scatter object with customized colors
+    for group_name in gr.keys():
+        group_df = df[df['Groups'] == group_name]
+        group_name = gr[group_name]
+        scatter_trace = go.Scatter(
+            x=group_df['PC1'], 
+            y=group_df['PC2'], 
+            mode='markers', 
+            marker=dict(size=8, colorscale=color_palette),
+            showlegend=True,
+            name=group_name,  # Assigning the group name as the legend label
+            opacity=0.9
+        )
+        scatter.append(scatter_trace)
+    # Create a layout for the plot
+    layout = go.Layout(width=700, height=500)
+
+    # Create a Figure object and add the Scatter object to it
+    fig = go.Figure(data=scatter, layout=layout)
     fig.update_layout(title=title, 
-                      template='plotly_white', 
-                    #   scene=dict(xaxis_title='1st eigenvector', yaxis_title='2nd eigenvector', 
-                    #              zaxis_title='3rd eigenvector')
-                                )
-    # fig.update_layout(template='plotly_white', )
-    fig.update_traces(marker_size=8)
-    fig.update_coloraxes(showscale=False)
+                      template='plotly_white')
+
+
     return fig
 
+def PCA3d(data, groups, title='3D PCA'):
+    data = factorize(data)
+    pca = calc_pca(data, comps=3)
+    # Create a dataframe with the reduced data
+    df = pd.DataFrame(pca, columns=['PC1', 'PC2', 'PC3'])
+    df['Groups'] = groups
+    # # Create the scatter plot with Plotly
+    # fig = px.scatter_3d(df, x='PC1', y='PC2', z='PC3', color='Groups', 
+    #                     symbol='Groups', opacity=0.9,
+    #                     width=800, height=800)
+
+    # # Set the title and axis labels
+    # fig.update_layout(title=title, 
+    #                   template='plotly_white', 
+    #                 scene=dict(xaxis_title='1st eigenvector', yaxis_title='2nd eigenvector', 
+    #                             zaxis_title='3rd eigenvector'))
+    # fig.update_traces(marker_size=5)
+    # fig.update_coloraxes(showscale=False)
+    # return fig
+
+
+    color_palette = ['blue', 'red']
+    scatter = []
+    gr = {
+        0:'Control',
+        1:'Case'
+    }
+
+    # Create a Scatter object with customized colors
+    for group_name in gr.keys():
+        group_df = df[df['Groups'] == group_name]
+        group_name = gr[group_name]
+        scatter_trace = go.Scatter3d(
+            x=group_df['PC1'], 
+            y=group_df['PC2'], 
+            z=group_df['PC3'], 
+            mode='markers', 
+            marker=dict(size=5, colorscale=color_palette),
+            showlegend=True,
+            name=group_name,  # Assigning the group name as the legend label
+            opacity=0.9
+        )
+        scatter.append(scatter_trace)
+    # Create a layout for the plot
+    layout = go.Layout(
+        width=800, 
+        height=800, 
+        scene=dict(
+            xaxis_title='PC1',
+            yaxis_title='PC2',
+            zaxis_title='PC3',
+        )
+        )
+
+    # Create a Figure object and add the Scatter object to it
+    fig = go.Figure(data=scatter, layout=layout)
+    fig.update_layout(title=title, 
+                      template='plotly_white')
+
+
+    return fig
