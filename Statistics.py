@@ -97,7 +97,7 @@ st.download_button(
 #######################################
 
 
-st.markdown('## Removed genotypes')
+st.markdown('## Removed genotypes(3+ alleles)')
 
 data = pd.read_csv("./code/data/filled_dropped.csv")
 
@@ -109,7 +109,7 @@ def convert_df_to_excel(df):
     return data.to_csv().encode('utf-8')
 
 st.download_button(
-    label="Download original data",
+    label="Download data",
     data=convert_df_to_excel(data),
     file_name='removed.csv',
     mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
