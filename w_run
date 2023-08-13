@@ -1,2 +1,2 @@
-kill -9 $(lsof -t -i:8501)
+kill -9 $(lsof -t -i:8502)
 streamlit run Statistics.py
