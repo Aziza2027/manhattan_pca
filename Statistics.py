@@ -49,6 +49,29 @@ st.download_button(
     mime='text/plain',
 )
 
+
+txt_file_path2 = './code/data/confidence_calc24.txt'
+
+# Read the content of the text file
+with open(txt_file_path2, 'r') as txt_file2:
+    txt_content2 = txt_file2.read()
+
+st.text_area('', value=txt_content2, height=400)
+
+@st.cache_data
+def convert_txt_to_bytes2(txt_content2):
+    return txt_content2.encode('utf-8')
+
+st.download_button(
+    label="Download as TXT",
+    data=convert_txt_to_bytes2(txt_content2),
+    file_name='confidence_interval_calc24.txt',
+    mime='text/plain',
+)
+
+
+
+
 # --------------------------------------------------------------------
 
 st.markdown('## Genotypes(Imputed)')
