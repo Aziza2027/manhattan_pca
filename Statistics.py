@@ -29,6 +29,7 @@ st.download_button(
 # --------------------------------------------------------------------
 
 st.markdown('## Confidence interval and odds ratios')
+st.markdown('### R')
 
 txt_file_path = './code/data/confidence.txt'
 
@@ -49,6 +50,7 @@ st.download_button(
     mime='text/plain',
 )
 
+st.markdown('### Calc Pcr 24')
 
 txt_file_path2 = './code/data/confidence_calc24.txt'
 
