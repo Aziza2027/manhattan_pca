@@ -1,2 +1,2 @@
-kill -9 $(lsof -t -i:8502)
-streamlit run Statistics.py
+kill -9 $(lsof -t -i:8000)
+streamlit run Statistics.py --server.port 8000
