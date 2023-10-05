@@ -102,7 +102,8 @@ st.download_button(
 #######################################
 
 
-st.markdown('## Genotypes(Original, with missing values)')
+st.markdown('## Genotypes')
+st.markdown('#### With missing values, all SNPs and INDELs')
 
 @st.cache_data
 def convert_df_to_excel(df):
@@ -119,7 +120,7 @@ st.download_button(
 #######################################
 
 
-st.markdown('## Removed genotypes(3+ alleles)')
+st.markdown('## Removed genotypes: INDELS, SNPs with 3+ alleles')
 
 st.dataframe(removed)
 
