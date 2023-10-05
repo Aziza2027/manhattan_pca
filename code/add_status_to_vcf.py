@@ -1,10 +1,10 @@
 import pandas as pd
 
-path = '/home/bio/Downloads/GWAS_analysis-20230810T033758Z-001/GWAS_analysis/variants/'
+path = '/home/bio/projects/GWAS_analysis-20230810T033758Z-001/GWAS_analysis/variants/'
 
-DATA_PATH = path + 'SNP_with_id.vcf'
+DATA_PATH = path + 'with_id.vcf'
 
-DATA_PATH_FILLED = path + 'filled.csv'
+DATA_PATH_FILLED = path + 'all_filled.csv'
 
 def read_vcf(data_path):
     df = pd.read_csv(DATA_PATH, delimiter=' ')

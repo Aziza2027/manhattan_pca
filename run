@@ -1,6 +1,12 @@
 # vcf -> website update
 
-# python ./code/add_status_to_vcf.py
+python ./code/add_status_to_vcf.py
+
+Rscript ./code/PvalCI.r # R script?
+
+python ./code/calc_pcr24.py
+
+python ./code/copy_files.py
 
 # ------------------- RUN NOTEBOOKS AND CONVERT TO HTML ----------------------
 
@@ -15,4 +21,26 @@ jupyter nbconvert --to html --ExecutePreprocessor.enabled=True ./code/manhattan.
 git add .
 git commit -m "update"
 git push
+
+
+# ---------- R VIRTUAL ENVIRONMENT ---------
+# # Step 1: Install renv package
+# install.packages("renv")
+
+# # Step 2: Create a New R Project (skip this step if you already have a project)
+# # Note: In RStudio, you can create a new project through the interface
+
+# # Step 3: Initialize renv in Your Project
+# library(renv)
+# renv::init()
+
+# # Step 4: Install Packages in the Virtual Environment
+# renv::install("package_name")
+
+# # Step 5: Activate and Deactivate the Virtual Environment (Optional)
+# # Note: You can run these commands as needed to activate or deactivate the environment
+# renv::activate() # Activates the virtual environment
+# # ... (do your work within the virtual environment)
+# renv::deactivate() # Deactivates the virtual environment and returns to the global R environment
+
 
