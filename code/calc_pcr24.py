@@ -5,7 +5,7 @@ import pandas as pd
 
 import sys
 
-output_file = "./data/confidence_calc24.txt"
+output_file = "./code/data/confidence_calc24.txt"
 
 # data_p = '/home/bio/projects/manhattan_pca/code/data/for Aziza.xlsx'
 # p_val = None

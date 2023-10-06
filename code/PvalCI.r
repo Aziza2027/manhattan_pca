@@ -2,6 +2,7 @@ library("readxl")
 library("SNPassoc")
 library(dplyr)
 library("data.table")
+# library(HardyWeinberg)
 
 data_path <- "./data/data_Ali.xlsx"
 
@@ -26,6 +27,15 @@ data(my_data, package = "SNPassoc")
 
 idx <- grep("^rs", colnames(my_data))
 my_data.s <- setupSNP(data=my_data, colSNPs=idx, sep="")
+
+# Comment next 5 lines if don't wanna use MAF
+maf <- summary(my_data.s, print=FALSE)
+snps.ok <- rownames(maf)[maf[,2]<=95]
+my_data <- cbind(my_data[,1], my_data[,'Status'], my_data[,snps.ok])
+idx <- grep("^rs", colnames(my_data))
+my_data.s <- setupSNP(data=my_data, colSNPs=idx, sep="")
+
+# my_data.s <- setupSNP(my_data, pos, sep="")
 
 # d <- summary(my_data.s, print=FALSE)
 
@@ -79,56 +89,4 @@ output <- capture.output(print(results))
 # Write the captured output to a text file
 writeLines(output, con = conf_file_path)
 
-
-# pos <- which(colnames(my_data.s), useNames = FALSE)
-# pos
-# pos <- colnames(my_data.s)
-# pos
-# pos <- which(colnames(my_data.s), useNames = FALSE)
-# my_data.s <- setupSNP(my_data, pos, sep="")
-# association(Status ~ rs225131, data = my_data.s)
-# 
-# 
-# # Splitting the SNP subset dataframe into smaller subsets
-# num_snps <- ncol(my_data.s)
-# subset_size <- 2000
-# num_subsets <- ceiling(num_snps / subset_size)
-# 
-# subset_list <- vector("list", num_subsets)
-# for (i in 1:num_subsets) {
-#   start <- (i - 1) * subset_size + 1
-#   end <- min(i * subset_size, num_snps)
-#   DATA <- cbind(my_data[["Status"]], my_data.s[, start:end])
-#   idx <- grep("^rs", colnames(DATA))
-#   DATA <- setupSNP(data=DATA, colSNPs=idx, sep="")
-#   subset_list[[i]] <- DATA
-# }
-# 
-# # Running WGassociation on each subset
-# result_list <- vector("list", num_subsets)
-# for (i in 1:num_subsets) {
-#   result_list[[i]] <- WGassociation(subset_list[[i]][, -1], data = subset_list[[i]][, 1])
-# }
-# 
-# # Combining the results
-# combined_result <- do.call("rbind", result_list)
-# 
-# print(combined_result)
-# resuols <- WGassociation(Status, my_data.s[, 1:1000])
-# 
-# # resuols[order(resuols$codominant), ]
-# 
-# 
-# resuols[order(resuols[, 2]), ]
-# 
-# ans <- WGassociation(Status, data=my_data.s)
-# head(ans)
-
-# plot(ans)
-
-
-
-# ans
-
-# write.csv(ans, "./data/R_stat_p.csv", row.names=TRUE)
 

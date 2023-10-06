@@ -8,6 +8,8 @@ python ./code/calc_pcr24.py
 
 python ./code/copy_files.py
 
+# update Manhattan and PCA plots
+
 # ------------------- RUN NOTEBOOKS AND CONVERT TO HTML ----------------------
 
 # jupyter nbconvert --to=html --ExecutePreprocessor.enabled=True notebook.ipynb # calculate R stat
