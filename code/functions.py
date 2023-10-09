@@ -19,6 +19,8 @@ from sklearn.preprocessing import OrdinalEncoder
 
 from ast import literal_eval
 
+from selenium import webdriver
+
 
 def fill(arr):
     imputer = KNNImputer(n_neighbors=10)
@@ -605,3 +607,120 @@ def PCA3d(data, groups, title='3D PCA'):
 
 
     return fig
+
+
+class CalcPcr:
+    def __init__(self):
+        # Choose the appropriate web driver (e.g., Chrome, Firefox)
+        self.driver = webdriver.Chrome()  # You need to have the Chrome driver installed
+
+        # Navigate to the website
+        website_url = "https://calc.pcr24.ru/index.php"
+        self.driver.get(website_url)
+
+        self.dic = {
+                'rs144854329': [('TGGTCCCACTCTTCCCACAT','AT'), ('TGGTCCCACTCTTCCCACATGGTCCCACTCTTCCCACA', 'AA')],
+                'rs1191376425': [('GTTCCTG','TG'), ('GTTCCTGTTCCT', 'TT')],
+                'rs1426319240': [('GGCGGC','CC'), ('GGCG', 'CG')]
+            }
+
+
+
+    def get_res(self, values):
+        try:
+            def put(k,v):
+                # Find and input value A
+                key = f"input[name='{k}']"
+                input_a = self.driver.find_element("css selector", key)
+                input_a.clear()  # Clear any existing value
+                input_a.send_keys(str(v))
+
+            for k, v in values.items():
+                put(k,v)
+
+            calculate_button = self.driver.find_element("css selector", "input[name='submit']")
+            calculate_button.click()
+
+            self.driver.implicitly_wait(3)  # Wait for up to 10 seconds
+
+            # Get the page source after calculations
+            page_source = self.driver.page_source
+            dfs = pd.read_html(page_source)
+            df_ = []
+            for i, name in zip([1,2,4,5], ['Allele', 'Codominant', 'Dominant', 'Recessive']):
+                DF = dfs[i].set_index(dfs[i].columns[0])
+                DF.columns = DF.iloc[0]
+                DF = DF[1:]
+                df_.append(name + '\n-----------------\n' +DF.to_string(col_space=10))
+
+            return '\n\n'.join(df_)
+
+        except Exception as e:
+            print("An error occurred:", str(e))
+
+
+    def get_stats(self, d):
+
+        if len(set(list(d.index[0]))) > 1:
+            my_list = list(d.index)
+            my_list[0], my_list[1] = my_list[1], my_list[0]
+            d = d.loc[my_list, :]
+
+        a = d.index.str.cat()
+        a,b = a[0], a[-1]
+
+        try:
+            sg3 = d.iloc[2,0]
+            cg3 = d.iloc[2,1]
+        except:
+            sg3, cg3 = 0, 0
+            
+        if a == b:
+            print(d)
+            b = d.index.str.cat()[-2]
+            print('ERROR', a, b, sg3, cg3)
+
+            # sys.exit()
+
+        values = {
+            'a1':a, 
+            'a2': b, 
+            'sg1': d.iloc[0,0], 
+            'sg2': d.iloc[1,0], 
+            'sg3': sg3, 
+            'cg1': d.iloc[0,1], 
+            'cg2': d.iloc[1,1], 
+            'cg3': cg3}
+
+        res = self.get_res(values)
+        return res
+
+    def encode_(self):
+        for k, v in self.dic.items():
+            for k1, v1 in v:
+                self.df.loc[self.df[k] == k1, k] = v1
+
+    def decode_(self):
+        for k, v in self.dic.items():
+            for k1, v1 in v:
+                self.df.loc[self.df[k] == v1, k] = k1
+        
+    def calc_stats(self, df, encode=False):
+        self.df = df
+        self.encode = encode
+
+        if encode:
+            self.encode_()
+
+        results = ''
+        for rs in df.columns[1:]:
+            
+            res = df.pivot_table(index=rs, columns='Status', aggfunc='size', fill_value=0)
+            res = rs + '\n' + self.get_stats(res) + '\n\n============================================================\n\n'
+            results += res
+
+        self.quit()
+        return results
+
+    def quit(self):
+        self.driver.quit()

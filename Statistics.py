@@ -11,9 +11,13 @@ st.title("Results")
 r_stat_p = './code/data/R_stat_p.csv'
 txt_file_path = './code/data/confidence.txt'
 txt_file_path2 = './code/data/confidence_calc24.txt'
+indel_txt_file_path = './code/data/confidence_INDEL_r.txt'
+indel_txt_file_path2 = './code/data/confidence_INDEL_calcpcr.txt'
 excel_file_path = './code/data/data_Ali.xlsx'
+
 data = pd.read_csv("./code/data/original.csv")
 removed = pd.read_csv("./code/data/filled_dropped.csv")
+indels = pd.read_csv("./code/data/significant_GENOTYPES.csv")
 
 # --------------------------------------------------------------------
 
@@ -37,7 +41,8 @@ st.download_button(
 # --------------------------------------------------------------------
 
 st.markdown('## Confidence interval and odds ratios')
-st.markdown('### R')
+st.markdown('### SNPs')
+st.markdown('#### R')
 
 # Read the content of the text file
 with open(txt_file_path, 'r') as txt_file:
@@ -56,7 +61,7 @@ st.download_button(
     mime='text/plain',
 )
 
-st.markdown('### Calc Pcr 24')
+st.markdown('#### Calc Pcr 24')
 
 # Read the content of the text file
 with open(txt_file_path2, 'r') as txt_file2:
@@ -74,6 +79,65 @@ st.download_button(
     file_name='confidence_interval_calc24.txt',
     mime='text/plain',
 )
+
+# --------------------------------------------------------------------
+
+st.markdown('### INDELS')
+st.markdown('#### R')
+
+# Read the content of the text file
+with open(indel_txt_file_path, 'r') as txt_file:
+    txt_content = txt_file.read()
+
+st.text_area('', value=txt_content, height=400)
+
+@st.cache_data
+def convert_txt_to_bytes(txt_content):
+    return txt_content.encode('utf-8')
+
+st.download_button(
+    label="Download as TXT",
+    data=convert_txt_to_bytes(txt_content),
+    file_name='confidence_interval_indel.txt',
+    mime='text/plain',
+)
+
+st.markdown('#### Calc Pcr 24')
+
+# Read the content of the text file
+with open(indel_txt_file_path2, 'r') as txt_file2:
+    txt_content2 = txt_file2.read()
+
+st.text_area('', value=txt_content2, height=400)
+
+@st.cache_data
+def convert_txt_to_bytes2(txt_content2):
+    return txt_content2.encode('utf-8')
+
+st.download_button(
+    label="Download as TXT",
+    data=convert_txt_to_bytes2(txt_content2),
+    file_name='confidence_interval_calc24_indel.txt',
+    mime='text/plain',
+)
+
+st.markdown('## Significant INDELS')
+
+st.dataframe(indels)
+
+@st.cache_data
+def convert_df_to_excel(df):
+    # IMPORTANT: Cache the conversion to prevent computation on every rerun
+    return indels.to_csv().encode('utf-8')
+
+st.download_button(
+    label="Download data",
+    data=convert_df_to_excel(removed),
+    file_name='significant_indels.csv',
+    mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+)
+
+
 
 # --------------------------------------------------------------------
 
@@ -135,3 +199,9 @@ st.download_button(
     file_name='removed.csv',
     mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
 )
+
+
+#######################################
+
+
+
