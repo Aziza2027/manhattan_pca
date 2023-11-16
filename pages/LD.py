@@ -56,10 +56,10 @@ def get_ld_block(file_='D_num'):
 def calc_LD(start, end, chr, proc):
     print('start')
     chr = mer.chr[mer.Chr==chr].unique()[0]
-    command_ = f'LDBlockShow -InVCF in/SNP_annotated_only_with_id.vcf -OutPut  out_wbs/D_num   -Region  {chr}:{start}:{end} -OutPng -SeleVar 1 -NoShowLDist 1000000000 -SpeSNPName in/in_new.snp -OutPng -ShowNum'
-    command = f'LDBlockShow -InVCF in/SNP_annotated_only_with_id.vcf -OutPut  out_wbs/D   -Region  {chr}:{start}:{end} -OutPng -SeleVar 1 -NoShowLDist 1000000000 -SpeSNPName in/in_new.snp -OutPng'
-    command2_ = f'LDBlockShow -InVCF in/SNP_annotated_only_with_id.vcf -OutPut  out_wbs/R_num   -Region  {chr}:{start}:{end} -OutPng -SeleVar 2 -NoShowLDist 1000000000 -SpeSNPName in/in_new.snp -OutPng -ShowNum'
-    command2 = f'LDBlockShow -InVCF in/SNP_annotated_only_with_id.vcf -OutPut  out_wbs/R   -Region  {chr}:{start}:{end} -OutPng -SeleVar 2 -NoShowLDist 1000000000 -SpeSNPName in/in_new.snp -OutPng'
+    command_ = f'./LDBlockShow -InVCF in/SNP_annotated_only_with_id.vcf -OutPut  out_wbs/D_num   -Region  {chr}:{start}:{end} -OutPng -SeleVar 1 -NoShowLDist 1000000000 -SpeSNPName in/in_new.snp -OutPng -ShowNum'
+    command = f'./LDBlockShow -InVCF in/SNP_annotated_only_with_id.vcf -OutPut  out_wbs/D   -Region  {chr}:{start}:{end} -OutPng -SeleVar 1 -NoShowLDist 1000000000 -SpeSNPName in/in_new.snp -OutPng'
+    command2_ = f'./LDBlockShow -InVCF in/SNP_annotated_only_with_id.vcf -OutPut  out_wbs/R_num   -Region  {chr}:{start}:{end} -OutPng -SeleVar 2 -NoShowLDist 1000000000 -SpeSNPName in/in_new.snp -OutPng -ShowNum'
+    command2 = f'./LDBlockShow -InVCF in/SNP_annotated_only_with_id.vcf -OutPut  out_wbs/R   -Region  {chr}:{start}:{end} -OutPng -SeleVar 2 -NoShowLDist 1000000000 -SpeSNPName in/in_new.snp -OutPng'
     subprocess.run('rm out_wbs/*', shell=True)
 
     ims = []
